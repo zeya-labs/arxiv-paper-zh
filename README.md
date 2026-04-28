@@ -1,144 +1,115 @@
 # arxiv-paper-zh
 
-`arxiv-paper-zh` 是一个用于翻译 arXiv LaTeX 论文的 Agent Skill。它做的事情很朴素：把论文源码和原 PDF 下载下来，保留一份原始 `source/`，再复制出一份可以翻译的 `source-zh/`，最后用本地 `tectonic` 编译出 `paper-zh.pdf`。
+新论文很多，英文读得再顺，也不如母语来得省劲。  
+这个 Skill 做的事情很简单：把 arXiv 论文的 LaTeX 源码和原 PDF 拉下来，单独复制出一份中文源码，再用本地 `tectonic` 编译成中文 PDF。
 
-它不是“把 PDF 丢进去等结果”的工具，更像是给 Agent 准备的一套认真翻译论文的工作台。翻译前先通读全文，术语先对齐，然后逐段改 LaTeX 源码。最后留下的不只是一个中文 PDF，还有一份能继续检查、修改和复用的中文 `.tex`。
+如果你想要的不是“看个大概”，而是一份**排版正常、公式引用不乱、后续还能继续改**的中文版论文，它会比直接翻 PDF 更合适。
 
 ![工作流程](docs/assets/workflow.svg)
 
-## 适合什么场景
+## 它适合谁
 
-如果你只是想快速知道论文大概讲了什么，直接让模型总结 PDF 就够了。
+适合这几种情况：
 
-但如果你想得到一份排版正常、公式引用不乱、可以继续校对的中文论文，这个 Skill 会更合适：
+- 你想把 arXiv 论文翻成能认真阅读的中文 PDF。
+- 你不想改坏原始源码，希望中英两份源码分开放。
+- 你希望译文是可以继续校对、继续修的 `.tex`，而不只是一次性的 PDF。
+- 你更在意翻译质量和可复核性，而不是“几分钟自动出结果”。
 
-- 原文源码不会被改动，方便随时对照。
-- 中文译文放在 `source-zh/`，可以像普通 LaTeX 项目一样维护。
-- 翻译要求是先读全文，再逐段翻译，不调用机器翻译 API。
-- 编译走本地 `tectonic`，不需要把论文源码上传到远程编译服务。
-- 翻完后可以扫描疑似漏翻的英文段落，再继续修。
-
-## 产物长什么样
-
-每篇论文会被放进一个按标题命名的文件夹里。结构固定，找东西很直接：
+它的产物会长这样：
 
 ![目录结构](docs/assets/workspace.svg)
 
-例如：
-
 ```text
 papers/WorldSplat/
-  source/          # arXiv 原始源码，尽量不动
-  source-zh/       # 中文翻译源码，只改这里
-  paper.pdf        # 原始论文 PDF
-  paper-zh.pdf     # 编译出来的中文 PDF
-  paper-meta.json  # arXiv ID、标题、主 TeX 文件等信息
+  source/          # 原始源码
+  source-zh/       # 中文源码
+  paper.pdf        # 原论文 PDF
+  paper-zh.pdf     # 中文 PDF
+  paper-meta.json  # 标题、arXiv ID、主 TeX 文件
 ```
 
-## 安装
+## 这个 Skill 会做什么
 
-先把仓库克隆到本地：
+装好之后，你只需要告诉 Agent 你想读哪篇论文，它会按这个流程做：
+
+1. 下载 arXiv 源码和原始 PDF  
+2. 按论文标题建目录，保留 `source/` 原文  
+3. 复制出 `source-zh/` 作为中文翻译版本  
+4. 先通读全文，再逐段翻译 LaTeX 源码  
+5. 扫描疑似漏翻的英文段落  
+6. 用本地 `tectonic` 编译出 `paper-zh.pdf`
+
+默认要求是：**不用机器翻译 API，不下载现成译文，先读全文，再逐段自己翻。**
+
+## 安装方式
+
+先 clone 仓库：
 
 ```bash
 git clone https://github.com/zeya-labs/arxiv-paper-zh.git
 ```
 
-然后把内层的 skill 目录复制到 Codex 的 skills 目录：
+最省心的安装方式，是直接让你的 Agent 帮你安装这个 Skill：
+
+```text
+路径 <你的仓库路径>/arxiv-paper-zh 中定义了一个 Skill，请你阅读并安装到你的 skills 目录下。
+```
+
+如果你用的是 Codex，也可以直接复制：
 
 ```bash
 mkdir -p ~/.codex/skills
 cp -R arxiv-paper-zh/arxiv-paper-zh ~/.codex/skills/
 ```
 
-如果你的客户端需要重新加载 skills，重启一下 Codex 或刷新 skill 列表即可。
+本地依赖只有这些：
 
-## 依赖
+- Python 3.10+
+- 能访问 `arxiv.org`
+- `tectonic`
 
-你需要：
+## 装好之后怎么用
 
-- Python 3.10 或更新版本
-- 能访问 `arxiv.org` 的网络
-- 已安装并能在命令行里调用的 `tectonic`
+你可以直接这样说：
 
-可以先检查：
+- `帮我把 2509.23402 翻译成中文 PDF`
+- `翻译这篇 arXiv：https://arxiv.org/abs/2603.17117`
+- `把 2601.00051v1 下载到 ./papers，全文翻译成中文，再编译 PDF`
+- `翻译 WorldSplat，保留 source 和 source-zh 两套源码`
 
-```bash
-python --version
-tectonic --version
-```
-
-## 怎么让 Agent 使用
-
-安装后，你可以直接这样说：
+如果你想明确一点，也可以这样说：
 
 ```text
-Use $arxiv-paper-zh to download https://arxiv.org/abs/2509.23402 into ./papers, translate the full paper into Chinese, and compile paper-zh.pdf.
+Use $arxiv-paper-zh to download https://arxiv.org/abs/2509.23402 into ./papers, translate the full paper into Chinese paragraph by paragraph, and compile paper-zh.pdf with tectonic.
 ```
 
-或者一次处理多篇：
+## 它和“直接翻 PDF”有什么不同
 
-```text
-Use $arxiv-paper-zh for 2603.17117 and 2601.00051v1. Keep source and source-zh separate, translate all sections, and build with tectonic.
-```
+直接翻 PDF 的优点是快。  
+这个 Skill 走的是另一条路：先处理 LaTeX 源码，再重新编译。
 
-中文也可以：
+这样做的好处是：
 
-```text
-使用 $arxiv-paper-zh 下载 2509.23402 到 ./papers，先通读全文，再逐段翻译成中文，并用 tectonic 编译出 paper-zh.pdf。
-```
+- 公式、引用、编号、多栏排版更稳
+- 原文和译文能并排保留，方便对照
+- 留下的是可继续修改的中文 `.tex`
+- 更适合认真读论文，而不是只看摘要级内容
 
-## 也可以手动跑脚本
+当然，代价也很直接：它更慢，也更挑论文条件。只有 arXiv 提供 LaTeX 源码的论文，才适合这条流程。
 
-Skill 里的脚本都是普通 Python 脚本，不依赖某个特定对话环境。
+## 手动跑脚本
 
-下载论文并创建目录：
+如果你不想通过 Agent，也可以直接用里面的脚本：
 
 ```bash
-python arxiv-paper-zh/scripts/fetch_arxiv_papers.py \
-  --dest ./papers \
-  https://arxiv.org/abs/2509.23402 \
-  2603.17117
-```
-
-扫描中文源码里疑似漏翻的英文：
-
-```bash
+python arxiv-paper-zh/scripts/fetch_arxiv_papers.py --dest ./papers 2509.23402
 python arxiv-paper-zh/scripts/inspect_tex.py scan --scope full ./papers/WorldSplat
-```
-
-编译中文 PDF：
-
-```bash
 python arxiv-paper-zh/scripts/build_translated_paper.py ./papers/WorldSplat
 ```
 
-如果主 TeX 文件识别错了，可以手动指定：
+## 说明
 
-```bash
-python arxiv-paper-zh/scripts/build_translated_paper.py \
-  --main-tex main.tex \
-  ./papers/WorldSplat
-```
-
-## 翻译质量怎么保证
-
-这个 Skill 不承诺“全自动完美翻译”。它真正强调的是一个可检查的过程：
-
-![质量闭环](docs/assets/quality-loop.svg)
-
-翻译时应该保留 LaTeX 结构、公式、引用、标签、图片路径、BibTeX 信息和代码标识符。模型名、数据集名、指标名、论文名这类标准术语通常也保留英文。真正需要翻译的是论文的叙述、标题、摘要、章节、图表标题、脚注、列表项和可见说明文字。
-
-如果扫描脚本还报出英文，不代表一定有错。它只是提醒你“这里可能还没翻”。剩下的英文如果是专有名词、代码、URL、公式、引用或者数据集名称，就可以保留。
-
-## 和直接翻译 PDF 有什么区别
-
-直接翻译 PDF 很方便，但容易遇到几个问题：公式被拆坏，双栏排版错乱，引用和图表编号变成普通文本，后续想局部修订也不方便。
-
-这个项目绕了一点路：先处理 LaTeX 源码，再重新编译。这样慢一些，但结果更像一篇正常论文，也更容易复核。
-
-## 限制
-
-这个工作流依赖 arXiv 提供 LaTeX 源码。如果某篇论文只有 PDF，或者源码包里没有 `.tex` 文件，就没法沿着这条路径生成可维护的中文源码。
-
-本项目只提供 workflow 和脚本，不分发论文源码、译文或生成的 PDF。请根据论文自身许可和你的使用场景来处理论文内容。
+这个项目只提供 workflow 和脚本，不分发论文源码、译文或生成的 PDF。  
+使用论文内容时，请以论文本身的许可和你的实际使用场景为准。
 
