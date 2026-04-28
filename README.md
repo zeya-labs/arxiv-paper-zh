@@ -43,7 +43,22 @@ papers/WorldSplat/
 
 ## 安装
 
-有两种方式。
+推荐在 Linux 上使用。论文源码编译、CJK 字体和 LaTeX 依赖修复在 Linux 上最稳定；本 Skill 默认使用 `tectonic` 编译中文 PDF。
+
+本地需要 Python 3.10+、能访问 `arxiv.org`，以及 `tectonic`。如果 Agent 编译时发现没装 `tectonic`，会优先尝试自动安装到 `~/.local/bin/tectonic`；如果你想提前手动装，可以用下面的命令。这个命令基于 [Tectonic 官方 Unix 安装方式](https://tectonic-typesetting.github.io/book/latest/getting-started/install.html)，只是把下载出的可执行文件放进 `~/.local/bin`。
+
+```bash
+mkdir -p ~/.local/bin
+tmpdir="$(mktemp -d)"
+curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net \
+  -o "$tmpdir/install-tectonic.sh"
+(cd "$tmpdir" && sh install-tectonic.sh)
+install -m 755 "$tmpdir/tectonic" ~/.local/bin/tectonic
+export PATH="$HOME/.local/bin:$PATH"
+tectonic --version
+```
+
+Skill 本身有两种安装方式。
 
 **方式一：把 GitHub 链接给 Agent**
 
@@ -64,12 +79,6 @@ cd arxiv-paper-zh
 # 把 Skill 装进 Codex
 mkdir -p ~/.codex/skills
 cp -R arxiv-paper-zh/. ~/.codex/skills/arxiv-paper-zh/
-```
-
-本地需要 Python 3.10+、能访问 `arxiv.org`，以及 `tectonic`：
-
-```bash
-tectonic --version
 ```
 
 ---

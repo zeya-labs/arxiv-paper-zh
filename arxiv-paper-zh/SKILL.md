@@ -17,7 +17,9 @@ Use this skill to build a source-preserving Chinese paper workspace from arXiv:
   paper-zh.pdf
 ```
 
-The core requirement is quality and auditability. Read the paper first, translate the Chinese copy manually paragraph by paragraph, preserve LaTeX structure, and compile locally with `tectonic`.
+The core requirement is layout preservation. Read the paper first, translate the Chinese copy manually paragraph by paragraph, preserve LaTeX structure, and compile locally with `tectonic` so the Chinese PDF keeps the original paper layout as much as possible.
+
+Prefer running this workflow on Linux. Linux is the recommended environment for arXiv source builds, CJK font fixes, and `tectonic` compilation.
 
 ## Workflow
 
@@ -75,6 +77,25 @@ The scanner is heuristic. Fix real missed English prose. It is acceptable for th
 
 ### 5. Compile With Tectonic
 
+Before building, check whether `tectonic` is available:
+
+```bash
+tectonic --version
+```
+
+If it is missing, do not stop at an instruction for the user. On Linux/macOS, self-install it to `~/.local/bin/tectonic` with the official installer:
+
+```bash
+mkdir -p ~/.local/bin
+tmpdir="$(mktemp -d)"
+curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net \
+  -o "$tmpdir/install-tectonic.sh"
+(cd "$tmpdir" && sh install-tectonic.sh)
+install -m 755 "$tmpdir/tectonic" ~/.local/bin/tectonic
+export PATH="$HOME/.local/bin:$PATH"
+tectonic --version
+```
+
 Build the Chinese PDF:
 
 ```bash
@@ -89,7 +110,7 @@ python {SKILL_DIR}/scripts/build_translated_paper.py \
   /abs/path/to/paper-dir
 ```
 
-The script runs `tectonic`, copies the resulting PDF to `<paper-dir>/paper-zh.pdf`, and reports the build log location if compilation fails.
+The script runs `tectonic`, copies the resulting PDF to `<paper-dir>/paper-zh.pdf`, and reports the build log location if compilation fails. If `tectonic` is missing, it attempts the same self-install automatically unless `--no-install-tectonic` is passed.
 
 ### 6. Verify
 
@@ -116,4 +137,3 @@ Before finishing:
 - `scripts/inspect_tex.py`: scan translated TeX for likely missed English prose.
 - `scripts/build_translated_paper.py`: compile `source-zh/` with `tectonic` and sync `paper-zh.pdf`.
 - `references/troubleshooting.md`: common source and build problems.
-

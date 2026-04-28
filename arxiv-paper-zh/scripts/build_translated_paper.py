@@ -5,9 +5,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import platform
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 
@@ -46,17 +49,78 @@ def find_main_tex(source_zh_dir: Path) -> Path:
     return candidates[0][1]
 
 
-def require_tectonic() -> str:
+TECTONIC_INSTALL_URL = "https://drop-sh.fullyjustified.net"
+
+
+def install_tectonic_to_user_bin() -> str:
+    system = platform.system()
+    if system not in {"Linux", "Darwin"}:
+        raise FileNotFoundError(
+            "tectonic was not found on PATH and automatic installation is only supported on Linux/macOS. "
+            "Install tectonic manually and rerun this script."
+        )
+
+    curl = shutil.which("curl")
+    if not curl:
+        raise FileNotFoundError(
+            "tectonic was not found on PATH and curl is unavailable, so it cannot be installed automatically."
+        )
+
+    bin_dir = Path.home() / ".local" / "bin"
+    target = bin_dir / "tectonic"
+    bin_dir.mkdir(parents=True, exist_ok=True)
+
+    print(f"[install] tectonic not found; installing to {target}", file=sys.stderr)
+    with tempfile.TemporaryDirectory(prefix="tectonic-install-") as tmp:
+        tmp_dir = Path(tmp)
+        installer = tmp_dir / "install-tectonic.sh"
+        subprocess.run(
+            [
+                curl,
+                "--proto",
+                "=https",
+                "--tlsv1.2",
+                "-fsSL",
+                TECTONIC_INSTALL_URL,
+                "-o",
+                str(installer),
+            ],
+            check=True,
+        )
+        subprocess.run(["sh", str(installer)], cwd=tmp_dir, check=True)
+
+        built = tmp_dir / "tectonic"
+        if not built.is_file():
+            raise FileNotFoundError(
+                "tectonic installer finished but no tectonic binary was produced"
+            )
+        shutil.copy2(built, target)
+        target.chmod(0o755)
+
+    if str(bin_dir) not in os.environ.get("PATH", "").split(os.pathsep):
+        print(f"[install] add {bin_dir} to PATH for future shells", file=sys.stderr)
+    return str(target)
+
+
+def require_tectonic(install_if_missing: bool) -> str:
     executable = shutil.which("tectonic")
     if executable:
         return executable
+    if install_if_missing:
+        return install_tectonic_to_user_bin()
     raise FileNotFoundError(
         "tectonic was not found on PATH. Install tectonic and rerun this script."
     )
 
 
-def run_tectonic(source_zh_dir: Path, main_tex: Path, build_dir: Path, keep_intermediates: bool) -> None:
-    executable = require_tectonic()
+def run_tectonic(
+    source_zh_dir: Path,
+    main_tex: Path,
+    build_dir: Path,
+    keep_intermediates: bool,
+    install_tectonic: bool,
+) -> None:
+    executable = require_tectonic(install_tectonic)
     build_dir.mkdir(parents=True, exist_ok=True)
 
     cmd = [
@@ -79,7 +143,12 @@ def run_tectonic(source_zh_dir: Path, main_tex: Path, build_dir: Path, keep_inte
         raise SystemExit(exc.returncode) from exc
 
 
-def build_one_paper(paper_dir: Path, main_tex_override: str | None, keep_intermediates: bool) -> None:
+def build_one_paper(
+    paper_dir: Path,
+    main_tex_override: str | None,
+    keep_intermediates: bool,
+    install_tectonic: bool,
+) -> None:
     paper_dir = paper_dir.expanduser().resolve()
     source_zh_dir = paper_dir / "source-zh"
     if not source_zh_dir.is_dir():
@@ -92,7 +161,7 @@ def build_one_paper(paper_dir: Path, main_tex_override: str | None, keep_interme
         raise FileNotFoundError(f"missing main TeX file: {source_zh_dir / main_tex}")
 
     build_dir = source_zh_dir / ".build-zh"
-    run_tectonic(source_zh_dir, main_tex, build_dir, keep_intermediates)
+    run_tectonic(source_zh_dir, main_tex, build_dir, keep_intermediates, install_tectonic)
 
     built_pdf = build_dir / f"{main_tex.stem}.pdf"
     if not built_pdf.exists() or built_pdf.stat().st_size == 0:
@@ -117,6 +186,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         help="Keep tectonic intermediate files in source-zh/.build-zh.",
     )
     parser.add_argument(
+        "--no-install-tectonic",
+        action="store_true",
+        help="Do not try to install tectonic automatically if it is missing.",
+    )
+    parser.add_argument(
         "paper_dirs",
         nargs="+",
         help="One or more paper directories that contain source-zh/.",
@@ -127,7 +201,12 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
 def main(argv: list[str]) -> int:
     args = parse_args(argv)
     for item in args.paper_dirs:
-        build_one_paper(Path(item), args.main_tex, args.keep_intermediates)
+        build_one_paper(
+            Path(item),
+            args.main_tex,
+            args.keep_intermediates,
+            not args.no_install_tectonic,
+        )
     return 0
 
 
@@ -139,4 +218,3 @@ if __name__ == "__main__":
     except Exception as exc:
         print(f"error: {exc}", file=sys.stderr)
         raise SystemExit(1)
-

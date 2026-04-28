@@ -33,11 +33,19 @@ Do not remove the paper's required class, packages, labels, citations, figures, 
 
 ## Tectonic Not Found
 
-Install `tectonic` and confirm:
+This skill recommends Linux and uses `tectonic` for local PDF compilation. The build script will try to install `tectonic` automatically to `~/.local/bin/tectonic` on Linux/macOS when it is missing.
+
+Manual install:
 
 ```bash
+mkdir -p ~/.local/bin
+tmpdir="$(mktemp -d)"
+curl --proto '=https' --tlsv1.2 -fsSL https://drop-sh.fullyjustified.net \
+  -o "$tmpdir/install-tectonic.sh"
+(cd "$tmpdir" && sh install-tectonic.sh)
+install -m 755 "$tmpdir/tectonic" ~/.local/bin/tectonic
+export PATH="$HOME/.local/bin:$PATH"
 tectonic --version
 ```
 
-The build script requires `tectonic` on `PATH`.
-
+If automatic installation is not allowed in the current environment, run the build script with `--no-install-tectonic` and install `tectonic` through the system package manager instead.
