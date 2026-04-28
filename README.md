@@ -10,18 +10,18 @@
 
 左边是 arXiv 原 PDF，右边是从 `source-zh/` 重新编译出来的中文版：
 
-![WorldSplat 原文 PDF 与中文 PDF 对照](docs/assets/example-worldsplat-pdf.png)
+![原文 PDF 与中文 PDF 对照示例](docs/assets/example-layout-pdf-1.png)
 
-同样的流程也适用于 Gen3R 这类 CVPR 双栏论文，下面左侧是 arXiv 原 PDF，右侧是编译出的中文 PDF：
+同样的流程也适用于 CVPR 这类双栏论文，下面是另一篇论文的原文 PDF 与中文 PDF 对照：
 
-![Gen3R 原文 PDF 与中文 PDF 对照](docs/assets/example-gen3r-pdf.png)
+![双栏论文原文 PDF 与中文 PDF 对照示例](docs/assets/example-layout-pdf-2.png)
 
 重点看排版：标题、摘要、正文翻成中文后，作者、引用、公式、图表位置和论文结构仍然跟着原 LaTeX 走。这不是贴在 PDF 上的翻译层，也不是把 PDF 拆碎再拼回去，而是从中文 LaTeX 源码重新编译出来的。
 
 一篇论文做完后目录是这样：
 
 ```
-papers/WorldSplat/
+papers/PaperTitle/
   paper.pdf       ← arXiv 原 PDF
   paper-zh.pdf    ← 编译出的中文 PDF
   source/         ← arXiv 原始 LaTeX，不动
@@ -41,9 +41,11 @@ papers/WorldSplat/
 5. 扫描漏翻段落
 6. `tectonic` 重新排版并编译，输出 `paper-zh.pdf`
 
-实际执行时，Agent 会一边读源码、一边翻译、一边修编译问题。下面这张图就是一次真实处理过程截图：
+实际执行时，Agent 会一边读源码、一边翻译、一边修编译问题。下面两张图是不同阶段的真实处理过程截图：
 
-![arxiv-paper-zh 实际工作过程截图](docs/assets/arxiv-paper-zh-workflow-screenshot.png)
+![读取源码、建立术语和章节脉络的过程截图](docs/assets/arxiv-paper-zh-source-review-screenshot.png)
+
+![翻译源码和修订编译问题的过程截图](docs/assets/arxiv-paper-zh-workflow-screenshot.png)
 
 不调用翻译 API，不碰 `source/`。
 
