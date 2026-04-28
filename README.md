@@ -4,6 +4,8 @@
 
 核心思路很简单：下载 arXiv 的 LaTeX 源码，保留一份原始的 `source/`，复制出 `source-zh/`，只在中文副本里替换可见文本，最后让 LaTeX 重新排版并编译出 `paper-zh.pdf`。公式、图表、引用、多栏结构、编号和页面组织都尽量沿用原论文，比直接翻译 PDF 或使用现成 PDF 工具更稳。
 
+翻译前会先建立一份简洁的 `translation/glossary.md`，记录术语译法，并在翻译过程中实时更新。需要中英对照阅读时，也可以额外输出 `paper-bilingual.pdf`；这个版本服务于对照阅读，不追求和原文完全同页同版。
+
 ---
 
 ## 效果长什么样 👀
@@ -24,8 +26,12 @@
 papers/PaperTitle/
   paper.pdf       ← arXiv 原 PDF
   paper-zh.pdf    ← 编译出的中文 PDF
+  paper-bilingual.pdf  ← 可选，中英对照阅读版
   source/         ← arXiv 原始 LaTeX，不动
   source-zh/      ← 中文 LaTeX，所有翻译都在这里
+  source-bilingual/    ← 可选，中英对照 LaTeX
+  translation/
+    glossary.md   ← 术语表，翻译过程中持续更新
 ```
 
 ---
@@ -36,8 +42,8 @@ papers/PaperTitle/
 
 1. 下载 arXiv 源码包 + 原始 PDF
 2. 解压到 `source/`，复制一份到 `source-zh/`
-3. 通读论文，确认术语、方法名、数据集名
-4. 在 `source-zh/` 里逐段翻译可见文本
+3. 通读论文，建立 `translation/glossary.md`
+4. 在 `source-zh/` 里逐段翻译可见文本，并实时更新术语表
 5. 扫描漏翻段落
 6. `tectonic` 重新排版并编译，输出 `paper-zh.pdf`
 
@@ -99,6 +105,12 @@ cp -R arxiv-paper-zh/. ~/.codex/skills/arxiv-paper-zh/
 
 ```
 帮我把 2509.23402 下载到 ./papers，全文翻译成中文，编译出 paper-zh.pdf。
+```
+
+如果需要中英对照阅读版，可以加一句：
+
+```
+另外输出 paper-bilingual.pdf。
 ```
 
 
