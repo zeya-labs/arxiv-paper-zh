@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="300" viewBox="0 0 1040 300" role="img" aria-label="arxiv-paper-zh 工作流程">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4b5563"/>
+    </marker>
+    <style>
+      .bg { fill: #f8fafc; }
+      .card { fill: #ffffff; stroke: #d7dee8; stroke-width: 1.4; }
+      .title { font: 700 19px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #111827; }
+      .text { font: 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #4b5563; }
+      .num { font: 700 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #ffffff; }
+      .line { stroke: #4b5563; stroke-width: 1.6; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" x="0" y="0" width="1040" height="300" rx="18"/>
+
+  <g transform="translate(42 78)">
+    <rect class="card" x="0" y="0" width="130" height="128" rx="12"/>
+    <circle cx="28" cy="28" r="15" fill="#2563eb"/>
+    <text class="num" x="28" y="33" text-anchor="middle">1</text>
+    <text class="title" x="22" y="68">给出论文</text>
+    <text class="text" x="22" y="94">arXiv ID</text>
+    <text class="text" x="22" y="114">或论文链接</text>
+  </g>
+
+  <line class="line" x1="184" y1="142" x2="228" y2="142"/>
+
+  <g transform="translate(240 78)">
+    <rect class="card" x="0" y="0" width="130" height="128" rx="12"/>
+    <circle cx="28" cy="28" r="15" fill="#0891b2"/>
+    <text class="num" x="28" y="33" text-anchor="middle">2</text>
+    <text class="title" x="22" y="68">下载整理</text>
+    <text class="text" x="22" y="94">source/</text>
+    <text class="text" x="22" y="114">paper.pdf</text>
+  </g>
+
+  <line class="line" x1="382" y1="142" x2="426" y2="142"/>
+
+  <g transform="translate(438 78)">
+    <rect class="card" x="0" y="0" width="130" height="128" rx="12"/>
+    <circle cx="28" cy="28" r="15" fill="#059669"/>
+    <text class="num" x="28" y="33" text-anchor="middle">3</text>
+    <text class="title" x="22" y="68">通读全文</text>
+    <text class="text" x="22" y="94">统一术语</text>
+    <text class="text" x="22" y="114">理解论证</text>
+  </g>
+
+  <line class="line" x1="580" y1="142" x2="624" y2="142"/>
+
+  <g transform="translate(636 78)">
+    <rect class="card" x="0" y="0" width="130" height="128" rx="12"/>
+    <circle cx="28" cy="28" r="15" fill="#7c3aed"/>
+    <text class="num" x="28" y="33" text-anchor="middle">4</text>
+    <text class="title" x="22" y="68">逐段翻译</text>
+    <text class="text" x="22" y="94">只改</text>
+    <text class="text" x="22" y="114">source-zh/</text>
+  </g>
+
+  <line class="line" x1="778" y1="142" x2="822" y2="142"/>
+
+  <g transform="translate(834 78)">
+    <rect class="card" x="0" y="0" width="164" height="128" rx="12"/>
+    <circle cx="28" cy="28" r="15" fill="#dc2626"/>
+    <text class="num" x="28" y="33" text-anchor="middle">5</text>
+    <text class="title" x="22" y="68">检查并编译</text>
+    <text class="text" x="22" y="94">inspect_tex</text>
+    <text class="text" x="22" y="114">tectonic 输出 PDF</text>
+  </g>
+</svg>
+
