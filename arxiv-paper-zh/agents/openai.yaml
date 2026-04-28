@@ -1,0 +1,5 @@
+interface:
+  display_name: "ArXiv Paper ZH"
+  short_description: "下载 arXiv 源码并逐段中译编译"
+  default_prompt: "Use $arxiv-paper-zh to download arXiv LaTeX sources, keep source and source-zh separate, translate the full paper into Chinese paragraph by paragraph, and compile paper-zh.pdf with tectonic."
+
