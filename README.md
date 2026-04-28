@@ -44,19 +44,31 @@ papers/WorldSplat/
 
 ## 安装方式
 
+### 方式一：直接交给 Agent 安装
+
+这是最省心的方式。你只需要把这个 GitHub 仓库告诉 Agent，让它自己去安装：
+
+```text
+请帮我安装这个 Skill：https://github.com/zeya-labs/arxiv-paper-zh
+```
+
+或者说得更明确一点：
+
+```text
+这个 GitHub 仓库里有一个 Skill，请你阅读并安装到你的 skills 目录里：https://github.com/zeya-labs/arxiv-paper-zh
+```
+
+如果你的 Agent 支持从 GitHub 仓库安装 Skill，这种方式通常最顺手。
+
+### 方式二：手动安装
+
 先 clone 仓库：
 
 ```bash
 git clone https://github.com/zeya-labs/arxiv-paper-zh.git
 ```
 
-最省心的安装方式，是直接让你的 Agent 帮你安装这个 Skill：
-
-```text
-路径 <你的仓库路径>/arxiv-paper-zh 中定义了一个 Skill，请你阅读并安装到你的 skills 目录下。
-```
-
-如果你用的是 Codex，也可以直接复制：
+然后把内层的 skill 目录复制到你的 skills 目录里。以 Codex 为例：
 
 ```bash
 mkdir -p ~/.codex/skills
@@ -98,18 +110,7 @@ Use $arxiv-paper-zh to download https://arxiv.org/abs/2509.23402 into ./papers, 
 
 当然，代价也很直接：它更慢，也更挑论文条件。只有 arXiv 提供 LaTeX 源码的论文，才适合这条流程。
 
-## 手动跑脚本
-
-如果你不想通过 Agent，也可以直接用里面的脚本：
-
-```bash
-python arxiv-paper-zh/scripts/fetch_arxiv_papers.py --dest ./papers 2509.23402
-python arxiv-paper-zh/scripts/inspect_tex.py scan --scope full ./papers/WorldSplat
-python arxiv-paper-zh/scripts/build_translated_paper.py ./papers/WorldSplat
-```
-
 ## 说明
 
 这个项目只提供 workflow 和脚本，不分发论文源码、译文或生成的 PDF。  
 使用论文内容时，请以论文本身的许可和你的实际使用场景为准。
-
