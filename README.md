@@ -46,19 +46,11 @@ papers/WorldSplat/
 
 ### 方式一：直接交给 Agent 安装
 
-这是最省心的方式。你只需要把这个 GitHub 仓库告诉 Agent，让它自己去安装：
+这是最省心的方式：
 
 ```text
 请帮我安装这个 Skill：https://github.com/zeya-labs/arxiv-paper-zh
 ```
-
-或者说得更明确一点：
-
-```text
-这个 GitHub 仓库里有一个 Skill，请你阅读并安装到你的 skills 目录里：https://github.com/zeya-labs/arxiv-paper-zh
-```
-
-如果你的 Agent 支持从 GitHub 仓库安装 Skill，这种方式通常最顺手。
 
 ### 方式二：手动安装
 
