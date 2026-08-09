@@ -1,3 +1,5 @@
+
+
 # arxiv-paper-zh
 
 把 arXiv 论文变成**尽量保持原排版的中文 PDF**，而不是把 PDF 丢给翻译器后得到一份版式散掉的结果。
@@ -94,7 +96,7 @@ cd arxiv-paper-zh
 
 # 把 Skill 装进 Codex
 mkdir -p ~/.codex/skills
-cp -R arxiv-paper-zh/. ~/.codex/skills/arxiv-paper-zh/
+cp -R . ~/.codex/skills/arxiv-paper-zh/
 ```
 
 ---
